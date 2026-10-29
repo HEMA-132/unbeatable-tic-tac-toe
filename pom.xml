@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>edu.gvpcew.devops</groupId>
+  <artifactId>unbeatable-tic-tac-toe</artifactId>
+  <version>1.0.0</version>
+  <packaging>pom</packaging>
+  <name>Unbeatable Tic-Tac-Toe frontend build</name>
+  <description>Maven orchestration for the existing React, TypeScript and Vite application.</description>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <node.version>v22.14.0</node.version>
+    <npm.version>10.9.2</npm.version>
+  </properties>
+
+  <!-- Maven coordinates the frontend workflow; Vite remains the actual frontend builder. -->
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.github.eirslett</groupId>
+        <artifactId>frontend-maven-plugin</artifactId>
+        <version>1.15.1</version>
+        <configuration>
+          <workingDirectory>${project.basedir}/tic-tac-toe-app</workingDirectory>
+          <installDirectory>${project.build.directory}/node</installDirectory>
+        </configuration>
+        <executions>
+          <execution>
+            <id>install-node-and-npm</id>
+            <goals><goal>install-node-and-npm</goal></goals>
+            <configuration>
+              <nodeVersion>${node.version}</nodeVersion>
+              <npmVersion>${npm.version}</npmVersion>
+            </configuration>
+          </execution>
+          <execution>
+            <id>install-locked-dependencies</id>
+            <goals><goal>npm</goal></goals>
+            <configuration><arguments>ci</arguments></configuration>
+          </execution>
+          <execution>
+            <id>run-existing-game-tests</id>
+            <goals><goal>npm</goal></goals>
+            <configuration><arguments>test</arguments></configuration>
+          </execution>
+          <execution>
+            <id>build-existing-game</id>
+            <goals><goal>npm</goal></goals>
+            <configuration><arguments>run build</arguments></configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
