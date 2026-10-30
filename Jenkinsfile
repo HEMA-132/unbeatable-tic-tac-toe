@@ -17,7 +17,9 @@ pipeline {
     environment {
         IMAGE_NAME = 'unbeatable-tic-tac-toe:latest'
         JAVA_HOME = 'C:\\Program Files\\Eclipse Adoptium\\jdk-21.0.12.101-hotspot'
-        PATH+DEVOPS_TOOLS = 'C:\\Windows\\Git\\cmd;C:\\Users\\ADMIN\\Downloads\\apache-maven-3.10.0-bin\\apache-maven-3.10.0\\bin;C:\\Users\\ADMIN\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin;C:\\Program Files\\Eclipse Adoptium\\jdk-21.0.12.101-hotspot\\bin'
+        MAVEN_CMD = 'C:\\Users\\ADMIN\\Downloads\\apache-maven-3.10.0-bin\\apache-maven-3.10.0\\bin\\mvn.cmd'
+        DOCKER_CMD = 'C:\\Users\\ADMIN\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe'
+        KUBECTL_CMD = 'C:\\Users\\ADMIN\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\kubectl.exe'
     }
 
     stages {
@@ -30,22 +32,22 @@ pipeline {
 
         stage('Verify Build Tools') {
             steps {
-                bat 'java -version'
-                bat 'mvn -version'
-                bat 'docker --version'
-                bat 'kubectl version --client'
+                bat '"%JAVA_HOME%\\bin\\java.exe" -version'
+                bat 'call "%MAVEN_CMD%" -version'
+                bat '"%DOCKER_CMD%" --version'
+                bat '"%KUBECTL_CMD%" version --client'
             }
         }
 
         stage('Test and Build with Maven') {
             steps {
-                bat 'mvn -B clean verify'
+                bat 'call "%MAVEN_CMD%" -B clean verify'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                bat 'docker build -t "%IMAGE_NAME%" .'
+                bat '"%DOCKER_CMD%" build -t "%IMAGE_NAME%" .'
             }
         }
 
@@ -54,9 +56,9 @@ pipeline {
                 expression { return params.DEPLOY_TO_K8S }
             }
             steps {
-                bat 'kubectl apply -f k8s/'
-                bat 'kubectl rollout status deployment/unbeatable-tic-tac-toe --timeout=120s'
-                bat 'kubectl get deployments,pods,services -l app=unbeatable-tic-tac-toe'
+                bat '"%KUBECTL_CMD%" apply -f k8s/'
+                bat '"%KUBECTL_CMD%" rollout status deployment/unbeatable-tic-tac-toe --timeout=120s'
+                bat '"%KUBECTL_CMD%" get deployments,pods,services -l app=unbeatable-tic-tac-toe'
             }
         }
     }
